@@ -3,10 +3,12 @@ require('dotenv').config();
 const express     = require('express');
 const bodyParser  = require('body-parser');
 const cors        = require('cors');
+const helmet      = require('helmet');
 
 const apiRoutes         = require('./routes/api.js');
 const fccTestingRoutes  = require('./routes/fcctesting.js');
 const runner            = require('./test-runner');
+
 
 const app = express();
 
@@ -16,6 +18,17 @@ app.use(cors({origin: '*'})); //For FCC testing purposes only
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+//we need this to get the ip addresses from incoming requests//
+app.enable('trust proxy');
+
+//mount helmet
+app.use(helmet.contentSecurityPolicy({
+  directives:{
+    scriptSrc: ["'self'"],
+    styleSrc: ["'self'"]
+  }
+}))
 
 //Index page (static HTML)
 app.route('/')
